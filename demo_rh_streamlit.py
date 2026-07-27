@@ -19,35 +19,79 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── CSS personnalisé pour un rendu professionnel ──────────
+# ── CSS personnalisé — Thème RH Clair & Professionnel ─────
 st.markdown("""
 <style>
-    .main { background-color: #f8f9fe; }
-    .stApp { font-family: 'Segoe UI', sans-serif; }
+    /* Fond général blanc cassé chaleureux */
+    .main { background-color: #f5f7fa; }
+    .stApp {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f5f7fa;
+    }
+
+    /* Sidebar couleur RH — bleu marine doux */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1b3a6b 0%, #2563a8 100%);
+        color: white;
+    }
+    [data-testid="stSidebar"] * { color: white !important; }
+    [data-testid="stSidebar"] .stSlider > div > div > div {
+        background: rgba(255,255,255,0.3) !important;
+    }
+
+    /* Titres en bleu RH */
+    h1 { color: #1b3a6b !important; font-weight: 800 !important; }
+    h2, h3 { color: #2563a8 !important; }
+
+    /* Cartes blanches avec ombre légère */
     .metric-card {
         background: white;
         padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(27,58,107,0.10);
         text-align: center;
         margin-bottom: 16px;
+        border-top: 3px solid #2563a8;
     }
+
+    /* Cartes de risque */
     .risk-high {
-        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        background: linear-gradient(135deg, #fff0f0, #ffd6d6);
         border-left: 5px solid #dc2626;
         padding: 20px; border-radius: 12px;
+        color: #7f1d1d !important;
     }
     .risk-medium {
-        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
         border-left: 5px solid #d97706;
         padding: 20px; border-radius: 12px;
+        color: #78350f !important;
     }
     .risk-low {
-        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-        border-left: 5px solid #059669;
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        border-left: 5px solid #16a34a;
         padding: 20px; border-radius: 12px;
+        color: #14532d !important;
     }
-    h1 { color: #4f46e5 !important; }
+
+    /* Boutons RH bleu */
+    .stButton > button {
+        background: linear-gradient(135deg, #1b3a6b, #2563a8) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        padding: 10px 24px !important;
+    }
+
+    /* Séparateur RH */
+    hr { border-color: #dbeafe !important; }
+
+    /* Métriques Streamlit */
+    [data-testid="stMetricValue"] {
+        color: #1b3a6b !important;
+        font-weight: 800 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
