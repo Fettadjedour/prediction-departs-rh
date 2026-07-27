@@ -20,147 +20,143 @@ html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
 
-/* === FOND GÉNÉRAL === */
-.stApp { background-color: #f0f2f5; }
+/* === FOND GÉNÉRAL — Violet lavande doux === */
+.stApp { background: linear-gradient(135deg, #f3f0ff 0%, #fdf4ff 50%, #fff7ed 100%); }
 .main .block-container { padding: 2rem 2.5rem; }
 
-/* === SIDEBAR === */
+/* === SIDEBAR — Violet foncé === */
 [data-testid="stSidebar"] {
-    background-color: #0f1f3d;
+    background: linear-gradient(180deg, #2d1b69 0%, #4c1d95 100%);
     border-right: none;
 }
 [data-testid="stSidebar"] > div { padding-top: 2rem; }
 [data-testid="stSidebar"] label,
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] span,
-[data-testid="stSidebar"] div { color: #cbd5e1 !important; font-size: 0.85rem; }
-[data-testid="stSidebar"] .stSlider [data-baseweb="slider"] div { background: #3b82f6 !important; }
-[data-testid="stSidebar"] hr { border-color: #1e3a5f !important; }
+[data-testid="stSidebar"] div { color: #ddd6fe !important; font-size: 0.85rem; }
+[data-testid="stSidebar"] hr { border-color: #5b21b6 !important; }
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 { color: #ffffff !important; }
 [data-testid="stSidebar"] .stButton > button {
-    background: #3b82f6 !important;
+    background: linear-gradient(135deg, #f97316, #ea580c) !important;
     color: white !important;
     border: none !important;
-    border-radius: 6px !important;
-    font-weight: 600 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
     width: 100%;
-    padding: 0.6rem !important;
+    padding: 0.65rem !important;
     font-size: 0.9rem !important;
     margin-top: 1rem;
-}
-[data-testid="stSidebar"] .stButton > button:hover {
-    background: #2563eb !important;
+    box-shadow: 0 4px 12px rgba(249,115,22,0.35) !important;
 }
 [data-testid="stSidebar"] [data-baseweb="select"] {
-    background: #1e3a5f !important;
-    border-color: #2d5080 !important;
+    background: rgba(255,255,255,0.08) !important;
+    border-color: #7c3aed !important;
     color: white !important;
 }
 
 /* === TEXTE PRINCIPAL === */
-h1 { color: #0f1f3d !important; font-weight: 800 !important; font-size: 1.8rem !important; letter-spacing: -0.5px; }
-h2 { color: #0f1f3d !important; font-weight: 700 !important; font-size: 1.2rem !important; }
-h3 { color: #1e40af !important; font-weight: 600 !important; font-size: 1rem !important; }
+h1 { color: #2d1b69 !important; font-weight: 800 !important; font-size: 1.8rem !important; letter-spacing: -0.5px; }
+h2 { color: #2d1b69 !important; font-weight: 700 !important; font-size: 1.2rem !important; }
+h3 { color: #6d28d9 !important; font-weight: 600 !important; font-size: 1rem !important; }
+h4 { color: #4c1d95 !important; font-weight: 700 !important; }
 p, li { color: #374151 !important; font-size: 0.9rem !important; }
-strong { color: #0f1f3d !important; }
+strong { color: #2d1b69 !important; }
 
-/* === CARTES === */
-div[data-testid="stHorizontalBlock"] > div {
-    background: white;
-    border-radius: 10px;
-    padding: 1.2rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-}
-
-/* === MÉTRIQUES === */
+/* === MÉTRIQUES — fond blanc avec top violet === */
 [data-testid="stMetric"] {
     background: white;
     padding: 1.2rem 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-    border-top: 3px solid #3b82f6;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(109,40,217,0.1);
+    border-top: 3px solid #7c3aed;
 }
-[data-testid="stMetricValue"] { color: #0f1f3d !important; font-weight: 800 !important; font-size: 1.6rem !important; }
-[data-testid="stMetricLabel"] { color: #6b7280 !important; font-size: 0.8rem !important; font-weight: 500 !important; text-transform: uppercase; letter-spacing: 0.05em; }
+[data-testid="stMetricValue"] { color: #2d1b69 !important; font-weight: 800 !important; font-size: 1.5rem !important; }
+[data-testid="stMetricLabel"] { color: #7c3aed !important; font-size: 0.75rem !important; font-weight: 600 !important; text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* === SÉPARATEUR === */
-hr { border-color: #e5e7eb !important; margin: 1.5rem 0 !important; }
+hr { border-color: #ede9fe !important; margin: 1.5rem 0 !important; }
 
 /* === BADGE RISQUE === */
 .badge-high {
     display: inline-block;
-    background: #fef2f2;
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
     color: #b91c1c;
-    border: 1px solid #fecaca;
-    padding: 0.3rem 0.8rem;
+    border: 1px solid #fca5a5;
+    padding: 0.35rem 1rem;
     border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 6px rgba(220,38,38,0.15);
 }
 .badge-medium {
     display: inline-block;
-    background: #fffbeb;
-    color: #92400e;
-    border: 1px solid #fde68a;
-    padding: 0.3rem 0.8rem;
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    color: #c2410c;
+    border: 1px solid #fdba74;
+    padding: 0.35rem 1rem;
     border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 6px rgba(249,115,22,0.15);
 }
 .badge-low {
     display: inline-block;
-    background: #f0fdf4;
-    color: #166534;
-    border: 1px solid #bbf7d0;
-    padding: 0.3rem 0.8rem;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    color: #15803d;
+    border: 1px solid #86efac;
+    padding: 0.35rem 1rem;
     border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 6px rgba(16,185,129,0.15);
 }
 
 /* === CARTE RÉSULTAT === */
 .result-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 1.5rem 2rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    box-shadow: 0 2px 12px rgba(109,40,217,0.08);
     margin-bottom: 1.5rem;
+    border: 1px solid #ede9fe;
 }
-.result-card h2 { margin-bottom: 0.3rem !important; }
 
-/* === ACTION CARD === */
+/* === ACTION CARDS === */
 .action-card {
     background: white;
-    border-radius: 10px;
-    padding: 1.2rem 1.5rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    border-left: 3px solid #3b82f6;
+    border-radius: 12px;
+    padding: 1.3rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(109,40,217,0.07);
+    border-left: 4px solid #7c3aed;
     height: 100%;
+    border-top: 1px solid #ede9fe;
 }
 .action-card h4 {
-    color: #0f1f3d !important;
-    font-size: 0.85rem !important;
+    color: #4c1d95 !important;
+    font-size: 0.82rem !important;
     font-weight: 700 !important;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     margin-bottom: 0.8rem;
 }
 .action-card p, .action-card li {
     color: #4b5563 !important;
     font-size: 0.85rem !important;
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
-/* === ALERTE === */
+/* === ALERTES === */
 .alert-item {
     display: flex;
     align-items: flex-start;
     gap: 0.6rem;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid #f3f4f6;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid #f5f3ff;
     font-size: 0.85rem;
     color: #374151 !important;
 }
@@ -247,12 +243,13 @@ else:
 # ── EN-TÊTE ─────────────────────────────────────────────────
 st.markdown(f"""
 <div style="display:flex; align-items:center; gap:16px; margin-bottom:0.5rem;">
-  <div style="background:#0f1f3d; color:white; width:48px; height:48px;
-              border-radius:10px; display:flex; align-items:center;
-              justify-content:center; font-size:1.4rem;">👥</div>
+  <div style="background:linear-gradient(135deg,#7c3aed,#a855f7); color:white; width:48px; height:48px;
+              border-radius:12px; display:flex; align-items:center;
+              justify-content:center; font-size:1.4rem;
+              box-shadow:0 4px 12px rgba(124,58,237,0.35);">👥</div>
   <div>
-    <div style="font-size:1.6rem; font-weight:800; color:#0f1f3d; line-height:1.2;">RH Predict</div>
-    <div style="font-size:0.82rem; color:#6b7280; margin-top:2px;">
+    <div style="font-size:1.6rem; font-weight:800; color:#2d1b69; line-height:1.2;">RH Predict</div>
+    <div style="font-size:0.82rem; color:#7c3aed; margin-top:2px; font-weight:500;">
       Plateforme d'analyse prédictive des ressources humaines
     </div>
   </div>
@@ -315,7 +312,7 @@ with col_gauge:
         margin=dict(t=20, b=0, l=30, r=30),
         paper_bgcolor='white',
         plot_bgcolor='white',
-        font=dict(family='Inter', color='#0f1f3d')
+        font=dict(family='Inter', color='#2d1b69')
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -364,8 +361,8 @@ st.markdown("#### 🎯 Plan d'action recommandé")
 a1, a2, a3 = st.columns(3)
 with a1:
     st.markdown("""
-    <div class="action-card">
-      <h4>⚡ Actions immédiates</h4>
+    <div class="action-card" style="border-left-color:#f97316; background:linear-gradient(135deg,#fff7ed,#fff);">
+      <h4 style="color:#c2410c !important;">⚡ Actions immédiates</h4>
       <ul>
         <li>Entretien individuel sous 2 semaines</li>
         <li>Évaluer la charge de travail réelle</li>
@@ -374,8 +371,8 @@ with a1:
     </div>""", unsafe_allow_html=True)
 with a2:
     st.markdown("""
-    <div class="action-card" style="border-color:#f59e0b;">
-      <h4>📅 À 3 mois</h4>
+    <div class="action-card" style="border-left-color:#7c3aed; background:linear-gradient(135deg,#f5f3ff,#fff);">
+      <h4 style="color:#4c1d95 !important;">📅 À 3 mois</h4>
       <ul>
         <li>Plan de développement personnalisé</li>
         <li>Révision salariale si justifiée</li>
@@ -384,8 +381,8 @@ with a2:
     </div>""", unsafe_allow_html=True)
 with a3:
     st.markdown("""
-    <div class="action-card" style="border-color:#10b981;">
-      <h4>🔭 À 6 mois</h4>
+    <div class="action-card" style="border-left-color:#10b981; background:linear-gradient(135deg,#f0fdf4,#fff);">
+      <h4 style="color:#065f46 !important;">🔭 À 6 mois</h4>
       <ul>
         <li>Bilan de satisfaction formalisé</li>
         <li>Opportunités d'évolution interne</li>
