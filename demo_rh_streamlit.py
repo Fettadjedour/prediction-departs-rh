@@ -111,6 +111,21 @@ st.markdown("""
         color: #1b3a6b !important;
         font-weight: 800 !important;
     }
+
+    /* Forcer le texte principal en foncé */
+    .main p, .main li, .main span, .main div {
+        color: #1e293b !important;
+    }
+    [data-testid="stMarkdownContainer"] p { color: #1e293b !important; }
+    [data-testid="stMarkdownContainer"] li { color: #1e293b !important; }
+    [data-testid="stMarkdownContainer"] strong { color: #1b3a6b !important; }
+
+    /* Labels des métriques */
+    [data-testid="stMetricLabel"] { color: #64748b !important; }
+
+    /* Texte des colonnes principales */
+    .block-container p { color: #1e293b !important; }
+    .block-container li { color: #1e293b !important; }
 </style>
 """, unsafe_allow_html=True)
 
