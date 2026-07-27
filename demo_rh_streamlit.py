@@ -283,9 +283,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 col_gauge, col_factors = st.columns([3, 2])
 
 with col_gauge:
-    st.markdown('<div class="result-card">', unsafe_allow_html=True)
     st.markdown("#### 📊 Score de risque de départ")
-
 
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -316,10 +314,8 @@ with col_gauge:
         font=dict(family='Inter', color='#2d1b69')
     )
     st.plotly_chart(fig, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with col_factors:
-    st.markdown('<div class="result-card" style="height:100%">', unsafe_allow_html=True)
     st.markdown("#### 🔍 Points d'attention")
 
     alertes, positifs = [], []
@@ -352,7 +348,6 @@ with col_factors:
             st.markdown(f'<div class="alert-item">🟢 {p}</div>', unsafe_allow_html=True)
     if not alertes and not positifs:
         st.markdown("Profil équilibré, continuer le suivi régulier.")
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ── GRAPHIQUE RADAR ─────────────────────────────────────────
