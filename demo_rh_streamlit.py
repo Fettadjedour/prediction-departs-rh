@@ -1,146 +1,182 @@
-# ============================================================
-#  DÉMO CLIENT — PRÉDICTION DES DÉPARTS RH
-#  Application Streamlit professionnelle
-# ============================================================
-#
-#  COMMENT LANCER CETTE DÉMO :
-#
-#  Option 1 — En ligne (RECOMMANDÉ, gratuit, rien à installer) :
-#    1. Va sur https://share.streamlit.io
-#    2. Connecte ton compte GitHub
-#    3. Upload ce fichier sur GitHub
-#    4. Streamlit génère un lien public à partager au client
-#
-#  Option 2 — Sur ton ordinateur :
-#    1. Ouvre un terminal
-#    2. pip install streamlit scikit-learn pandas numpy plotly
-#    3. streamlit run demo_rh_streamlit.py
-#    4. S'ouvre automatiquement dans le navigateur
-#
-# ============================================================
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 import plotly.graph_objects as go
-import plotly.express as px
 
-# ── Configuration de la page ──────────────────────────────
 st.set_page_config(
-    page_title="RH Predict — Anticipez les départs",
+    page_title="RH Predict",
     page_icon="👥",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ── CSS personnalisé — Thème RH Clair & Professionnel ─────
 st.markdown("""
 <style>
-    /* Fond général blanc cassé chaleureux */
-    .main { background-color: #f5f7fa; }
-    .stApp {
-        font-family: 'Segoe UI', sans-serif;
-        background-color: #f5f7fa;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-    /* Sidebar couleur RH — bleu marine doux */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1b3a6b 0%, #2563a8 100%);
-        color: white;
-    }
-    [data-testid="stSidebar"] label { color: white !important; }
-    [data-testid="stSidebar"] p { color: white !important; }
-    [data-testid="stSidebar"] span { color: white !important; }
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] { color: white !important; }
-    [data-testid="stSidebar"] .stSlider > div > div > div {
-        background: rgba(255,255,255,0.3) !important;
-    }
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
 
-    /* Titres en bleu RH */
-    h1 { color: #1b3a6b !important; font-weight: 800 !important; }
-    h2, h3 { color: #2563a8 !important; }
+/* === FOND GÉNÉRAL === */
+.stApp { background-color: #f0f2f5; }
+.main .block-container { padding: 2rem 2.5rem; }
 
-    /* Cartes blanches avec ombre légère */
-    .metric-card {
-        background: white;
-        padding: 20px;
-        border-radius: 14px;
-        box-shadow: 0 3px 12px rgba(27,58,107,0.10);
-        text-align: center;
-        margin-bottom: 16px;
-        border-top: 3px solid #2563a8;
-    }
+/* === SIDEBAR === */
+[data-testid="stSidebar"] {
+    background-color: #0f1f3d;
+    border-right: none;
+}
+[data-testid="stSidebar"] > div { padding-top: 2rem; }
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] div { color: #cbd5e1 !important; font-size: 0.85rem; }
+[data-testid="stSidebar"] .stSlider [data-baseweb="slider"] div { background: #3b82f6 !important; }
+[data-testid="stSidebar"] hr { border-color: #1e3a5f !important; }
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 { color: #ffffff !important; }
+[data-testid="stSidebar"] .stButton > button {
+    background: #3b82f6 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    width: 100%;
+    padding: 0.6rem !important;
+    font-size: 0.9rem !important;
+    margin-top: 1rem;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+    background: #2563eb !important;
+}
+[data-testid="stSidebar"] [data-baseweb="select"] {
+    background: #1e3a5f !important;
+    border-color: #2d5080 !important;
+    color: white !important;
+}
 
-    /* Cartes de risque */
-    .risk-high {
-        background: linear-gradient(135deg, #fff0f0, #ffd6d6);
-        border-left: 5px solid #dc2626;
-        padding: 20px; border-radius: 12px;
-        color: #7f1d1d !important;
-    }
-    .risk-medium {
-        background: linear-gradient(135deg, #fffbeb, #fef3c7);
-        border-left: 5px solid #d97706;
-        padding: 20px; border-radius: 12px;
-        color: #78350f !important;
-    }
-    .risk-low {
-        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-        border-left: 5px solid #16a34a;
-        padding: 20px; border-radius: 12px;
-        color: #14532d !important;
-    }
+/* === TEXTE PRINCIPAL === */
+h1 { color: #0f1f3d !important; font-weight: 800 !important; font-size: 1.8rem !important; letter-spacing: -0.5px; }
+h2 { color: #0f1f3d !important; font-weight: 700 !important; font-size: 1.2rem !important; }
+h3 { color: #1e40af !important; font-weight: 600 !important; font-size: 1rem !important; }
+p, li { color: #374151 !important; font-size: 0.9rem !important; }
+strong { color: #0f1f3d !important; }
 
-    /* Boutons RH bleu */
-    .stButton > button {
-        background: linear-gradient(135deg, #1b3a6b, #2563a8) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        padding: 10px 24px !important;
-    }
+/* === CARTES === */
+div[data-testid="stHorizontalBlock"] > div {
+    background: white;
+    border-radius: 10px;
+    padding: 1.2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
 
-    /* Séparateur RH */
-    hr { border-color: #dbeafe !important; }
+/* === MÉTRIQUES === */
+[data-testid="stMetric"] {
+    background: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-top: 3px solid #3b82f6;
+}
+[data-testid="stMetricValue"] { color: #0f1f3d !important; font-weight: 800 !important; font-size: 1.6rem !important; }
+[data-testid="stMetricLabel"] { color: #6b7280 !important; font-size: 0.8rem !important; font-weight: 500 !important; text-transform: uppercase; letter-spacing: 0.05em; }
 
-    /* Métriques Streamlit */
-    [data-testid="stMetricValue"] {
-        color: #1b3a6b !important;
-        font-weight: 800 !important;
-    }
+/* === SÉPARATEUR === */
+hr { border-color: #e5e7eb !important; margin: 1.5rem 0 !important; }
 
-    /* Forcer le texte principal en foncé */
-    .main p, .main li, .main span, .main div {
-        color: #1e293b !important;
-    }
-    [data-testid="stMarkdownContainer"] p { color: #1e293b !important; }
-    [data-testid="stMarkdownContainer"] li { color: #1e293b !important; }
-    [data-testid="stMarkdownContainer"] strong { color: #1b3a6b !important; }
+/* === BADGE RISQUE === */
+.badge-high {
+    display: inline-block;
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+.badge-medium {
+    display: inline-block;
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.badge-low {
+    display: inline-block;
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
 
-    /* Labels des métriques */
-    [data-testid="stMetricLabel"] { color: #64748b !important; }
+/* === CARTE RÉSULTAT === */
+.result-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-bottom: 1.5rem;
+}
+.result-card h2 { margin-bottom: 0.3rem !important; }
 
-    /* Texte des colonnes principales */
-    .block-container p { color: #1e293b !important; }
-    .block-container li { color: #1e293b !important; }
+/* === ACTION CARD === */
+.action-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-left: 3px solid #3b82f6;
+    height: 100%;
+}
+.action-card h4 {
+    color: #0f1f3d !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.8rem;
+}
+.action-card p, .action-card li {
+    color: #4b5563 !important;
+    font-size: 0.85rem !important;
+    line-height: 1.6;
+}
+
+/* === ALERTE === */
+.alert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.85rem;
+    color: #374151 !important;
+}
+.alert-item:last-child { border-bottom: none; }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ══════════════════════════════════════════════════════════
-# ENTRAÎNEMENT DU MODÈLE (fait une seule fois au démarrage)
-# ══════════════════════════════════════════════════════════
+# ── Entraînement du modèle ──────────────────────────────────
 @st.cache_resource
 def entrainer_modele():
     np.random.seed(42)
     n = 1470
-    departements = ['Ventes', 'Technique', 'Support', 'IT', 'RH',
-                    'Comptabilité', 'Marketing', 'R&D', 'Management', 'Produit']
-    salaires_list = ['Faible', 'Moyen', 'Élevé']
-
+    depts = ['Ventes', 'Technique', 'Support', 'IT', 'RH',
+             'Comptabilité', 'Marketing', 'R&D', 'Management', 'Produit']
+    sals = ['Faible', 'Moyen', 'Élevé']
     df = pd.DataFrame({
         'satisfaction':        np.random.uniform(0.1, 1.0, n).round(2),
         'derniere_evaluation': np.random.uniform(0.4, 1.0, n).round(2),
@@ -149,343 +185,239 @@ def entrainer_modele():
         'anciennete':          np.random.randint(1, 11, n),
         'accident_travail':    np.random.randint(0, 2, n),
         'promotion_5ans':      np.random.randint(0, 2, n),
-        'departement':         np.random.choice(departements, n),
-        'salaire':             np.random.choice(salaires_list, n),
+        'departement':         np.random.choice(depts, n),
+        'salaire':             np.random.choice(sals, n),
     })
-
-    prob_depart = (
-        (1 - df['satisfaction']) * 0.5 +
-        (df['heures_mois'] / 310) * 0.3 +
-        (df['salaire'] == 'Faible').astype(int) * 0.2
-    )
-    df['depart'] = (prob_depart > np.random.uniform(0, 1, n)).astype(int)
-
-    le_dept = LabelEncoder()
-    le_sal  = LabelEncoder()
-    df['departement_enc'] = le_dept.fit_transform(df['departement'])
-    df['salaire_enc']     = le_sal.fit_transform(df['salaire'])
-
-    features = ['satisfaction', 'derniere_evaluation', 'nb_projets',
-                'heures_mois', 'anciennete', 'accident_travail',
-                'promotion_5ans', 'departement_enc', 'salaire_enc']
-
-    modele = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10)
-    modele.fit(df[features], df['depart'])
-
-    return modele, le_dept, le_sal, features
+    prob = ((1 - df['satisfaction']) * 0.5 +
+            (df['heures_mois'] / 310) * 0.3 +
+            (df['salaire'] == 'Faible').astype(int) * 0.2)
+    df['depart'] = (prob > np.random.uniform(0, 1, n)).astype(int)
+    le_d = LabelEncoder(); le_s = LabelEncoder()
+    df['dept_enc'] = le_d.fit_transform(df['departement'])
+    df['sal_enc']  = le_s.fit_transform(df['salaire'])
+    feats = ['satisfaction','derniere_evaluation','nb_projets','heures_mois',
+             'anciennete','accident_travail','promotion_5ans','dept_enc','sal_enc']
+    m = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10)
+    m.fit(df[feats], df['depart'])
+    return m, le_d, le_s, feats
 
 modele, le_dept, le_sal, features = entrainer_modele()
 
 
-# ══════════════════════════════════════════════════════════
-# EN-TÊTE DE L'APPLICATION
-# ══════════════════════════════════════════════════════════
-col_logo, col_titre = st.columns([1, 5])
-with col_logo:
-    st.markdown("# 👥")
-with col_titre:
-    st.markdown("# RH Predict")
-    st.markdown("*Anticipez les départs · Protégez vos talents · Réduisez vos coûts de recrutement*")
-
-st.divider()
-
-
-# ══════════════════════════════════════════════════════════
-# BARRE LATÉRALE — FORMULAIRE EMPLOYÉ
-# ══════════════════════════════════════════════════════════
+# ── SIDEBAR ─────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 👤 Profil de l'employé")
-    st.markdown("*Renseignez les informations pour obtenir une analyse*")
-    st.divider()
+    st.markdown("### 👤 Profil de l'employé")
+    st.markdown("---")
 
-    satisfaction = st.slider(
-        "😊 Satisfaction au travail",
-        min_value=0.0, max_value=1.0, value=0.5, step=0.05,
-        help="0 = très insatisfait · 1 = très satisfait"
-    )
-
-    evaluation = st.slider(
-        "⭐ Dernière évaluation",
-        min_value=0.0, max_value=1.0, value=0.7, step=0.05,
-        help="Score de la dernière évaluation de performance"
-    )
-
-    nb_projets = st.selectbox(
-        "📁 Nombre de projets en cours",
-        options=[2, 3, 4, 5, 6, 7],
-        index=1
-    )
-
-    heures_mois = st.slider(
-        "⏱ Heures travaillées / mois",
-        min_value=96, max_value=310, value=160, step=5,
-        help="Moyenne mensuelle · Norme = 151h"
-    )
-
-    anciennete = st.slider(
-        "📅 Ancienneté (années)",
-        min_value=1, max_value=10, value=3
-    )
-
-    departement = st.selectbox(
-        "🏢 Département",
-        options=['Ventes', 'Technique', 'Support', 'IT', 'RH',
-                 'Comptabilité', 'Marketing', 'R&D', 'Management', 'Produit']
-    )
-
-    salaire = st.selectbox(
-        "💰 Niveau de salaire",
-        options=['Faible', 'Moyen', 'Élevé']
-    )
-
-    accident = st.radio(
-        "🏥 Accident de travail",
-        options=['Non', 'Oui'],
-        horizontal=True
-    )
-
-    promotion = st.radio(
-        "📈 Promotion dans les 5 dernières années",
-        options=['Non', 'Oui'],
-        horizontal=True
-    )
-
-    st.divider()
-    analyser = st.button("🔍 Analyser cet employé", use_container_width=True, type="primary")
+    satisfaction = st.slider("Satisfaction au travail", 0.0, 1.0, 0.5, 0.05,
+                             help="0 = très insatisfait · 1 = très satisfait")
+    evaluation   = st.slider("Dernière évaluation", 0.0, 1.0, 0.7, 0.05)
+    nb_projets   = st.selectbox("Nombre de projets", [2,3,4,5,6,7], index=1)
+    heures_mois  = st.slider("Heures / mois", 96, 310, 160, 5,
+                              help="Norme = 151h/mois")
+    anciennete   = st.slider("Ancienneté (années)", 1, 10, 3)
+    departement  = st.selectbox("Département",
+                   ['Ventes','Technique','Support','IT','RH',
+                    'Comptabilité','Marketing','R&D','Management','Produit'])
+    salaire      = st.selectbox("Niveau de salaire", ['Faible','Moyen','Élevé'])
+    accident     = st.radio("Accident de travail", ['Non','Oui'], horizontal=True)
+    promotion    = st.radio("Promotion (5 dernières années)", ['Non','Oui'], horizontal=True)
+    st.markdown("---")
+    analyser = st.button("Analyser cet employé", use_container_width=True)
 
 
-# ══════════════════════════════════════════════════════════
-# ZONE PRINCIPALE — RÉSULTATS
-# ══════════════════════════════════════════════════════════
-
-# Préparer les données de l'employé
+# ── CALCUL ──────────────────────────────────────────────────
 dept_enc = le_dept.transform([departement])[0]
 sal_enc  = le_sal.transform([salaire])[0]
+employe  = pd.DataFrame([[satisfaction, evaluation, nb_projets, heures_mois,
+                          anciennete, 1 if accident=='Oui' else 0,
+                          1 if promotion=='Oui' else 0, dept_enc, sal_enc]],
+                        columns=features)
+proba      = modele.predict_proba(employe)[0]
+risque_pct = proba[1] * 100
 
-employe = pd.DataFrame([[
-    satisfaction, evaluation, nb_projets, heures_mois, anciennete,
-    1 if accident == 'Oui' else 0,
-    1 if promotion == 'Oui' else 0,
-    dept_enc, sal_enc
-]], columns=features)
+if risque_pct >= 60:
+    niveau, couleur_badge, couleur_barre = "RISQUE ÉLEVÉ", "badge-high", "#dc2626"
+elif risque_pct >= 30:
+    niveau, couleur_badge, couleur_barre = "RISQUE MODÉRÉ", "badge-medium", "#d97706"
+else:
+    niveau, couleur_badge, couleur_barre = "FAIBLE RISQUE", "badge-low", "#16a34a"
 
-proba       = modele.predict_proba(employe)[0]
-risque_pct  = proba[1] * 100
-prediction  = modele.predict(employe)[0]
 
-# ── Jauge de risque ───────────────────────────────────────
-st.markdown("### 📊 Analyse du risque de départ")
+# ── EN-TÊTE ─────────────────────────────────────────────────
+st.markdown(f"""
+<div style="display:flex; align-items:center; gap:16px; margin-bottom:0.5rem;">
+  <div style="background:#0f1f3d; color:white; width:48px; height:48px;
+              border-radius:10px; display:flex; align-items:center;
+              justify-content:center; font-size:1.4rem;">👥</div>
+  <div>
+    <div style="font-size:1.6rem; font-weight:800; color:#0f1f3d; line-height:1.2;">RH Predict</div>
+    <div style="font-size:0.82rem; color:#6b7280; margin-top:2px;">
+      Plateforme d'analyse prédictive des ressources humaines
+    </div>
+  </div>
+  <div style="margin-left:auto;">
+    <span class="{couleur_badge}">{niveau}</span>
+  </div>
+</div>
+<hr>
+""", unsafe_allow_html=True)
 
-col1, col2 = st.columns([2, 1])
 
-with col1:
-    fig_gauge = go.Figure(go.Indicator(
-        mode="gauge+number+delta",
+# ── KPIs ────────────────────────────────────────────────────
+sal_map = {'Faible': 28000, 'Moyen': 42000, 'Élevé': 65000}
+sal_ann = sal_map[salaire]
+cout    = sal_ann * 0.5
+
+c1, c2, c3, c4 = st.columns(4)
+with c1:
+    st.metric("Probabilité de départ", f"{risque_pct:.1f}%")
+with c2:
+    st.metric("Coût de remplacement", f"{cout:,.0f} €")
+with c3:
+    st.metric("Risque financier", f"{cout * proba[1]:,.0f} €")
+with c4:
+    st.metric("Ancienneté", f"{anciennete} ans")
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+
+# ── JAUGE + FACTEURS ────────────────────────────────────────
+col_gauge, col_factors = st.columns([3, 2])
+
+with col_gauge:
+    st.markdown('<div class="result-card">', unsafe_allow_html=True)
+    st.markdown("#### 📊 Score de risque de départ")
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
         value=risque_pct,
-        number={'suffix': '%', 'font': {'size': 48}},
-        title={'text': "Probabilité de départ", 'font': {'size': 18}},
+        number={'suffix': '%', 'font': {'size': 52, 'color': '#0f1f3d', 'family': 'Inter'}},
         gauge={
-            'axis': {'range': [0, 100], 'tickwidth': 1},
-            'bar': {'color': "#4f46e5"},
+            'axis': {'range': [0, 100], 'tickwidth': 1,
+                     'tickcolor': '#9ca3af', 'tickfont': {'color': '#6b7280', 'size': 11}},
+            'bar': {'color': couleur_barre, 'thickness': 0.25},
+            'bgcolor': 'white',
+            'borderwidth': 0,
             'steps': [
-                {'range': [0, 30],  'color': '#d1fae5'},
-                {'range': [30, 60], 'color': '#fef3c7'},
-                {'range': [60, 100],'color': '#fee2e2'},
+                {'range': [0, 30],  'color': '#f0fdf4'},
+                {'range': [30, 60], 'color': '#fffbeb'},
+                {'range': [60, 100],'color': '#fef2f2'},
             ],
             'threshold': {
-                'line': {'color': "#dc2626", 'width': 4},
-                'thickness': 0.75,
-                'value': risque_pct
+                'line': {'color': couleur_barre, 'width': 3},
+                'thickness': 0.8, 'value': risque_pct
             }
         }
     ))
-    fig_gauge.update_layout(
-        height=280,
-        margin=dict(t=40, b=0, l=20, r=20),
-        paper_bgcolor='#f5f7fa',
-        plot_bgcolor='#f5f7fa',
-        font=dict(color='#1b3a6b')
+    fig.update_layout(
+        height=260,
+        margin=dict(t=20, b=0, l=30, r=30),
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        font=dict(family='Inter', color='#0f1f3d')
     )
-    st.plotly_chart(fig_gauge, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-with col2:
-    st.markdown("<br><br>", unsafe_allow_html=True)
+with col_factors:
+    st.markdown('<div class="result-card" style="height:100%">', unsafe_allow_html=True)
+    st.markdown("#### 🔍 Points d'attention")
 
-    if risque_pct >= 60:
-        st.markdown(f"""
-        <div class="risk-high">
-            <h2>⚠️ RISQUE ÉLEVÉ</h2>
-            <p><strong>{risque_pct:.0f}%</strong> de probabilité de départ</p>
-            <p>Action immédiate recommandée</p>
-        </div>
-        """, unsafe_allow_html=True)
-    elif risque_pct >= 30:
-        st.markdown(f"""
-        <div class="risk-medium">
-            <h2>⚡ RISQUE MODÉRÉ</h2>
-            <p><strong>{risque_pct:.0f}%</strong> de probabilité de départ</p>
-            <p>Surveillance et actions préventives</p>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-        <div class="risk-low">
-            <h2>✅ FAIBLE RISQUE</h2>
-            <p><strong>{risque_pct:.0f}%</strong> de probabilité de départ</p>
-            <p>Employé stable, continuer le suivi</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-st.divider()
-
-# ── Facteurs de risque ────────────────────────────────────
-st.markdown("### 🔍 Analyse des facteurs de risque")
-
-col3, col4 = st.columns(2)
-
-with col3:
-    # Graphique radar des facteurs
-    categories = ['Satisfaction', 'Charge travail', 'Ancienneté', 'Évaluation', 'Nb projets']
-
-    # Normaliser pour le radar (0 à 1, 1 = risque élevé)
-    val_satisfaction  = 1 - satisfaction
-    val_charge        = (heures_mois - 96) / (310 - 96)
-    val_anciennete    = anciennete / 10
-    val_evaluation    = evaluation
-    val_projets       = (nb_projets - 2) / 5
-
-    valeurs = [val_satisfaction, val_charge, val_anciennete, val_evaluation, val_projets]
-    valeurs += [valeurs[0]]  # fermer le radar
-    categories += [categories[0]]
-
-    fig_radar = go.Figure(go.Scatterpolar(
-        r=valeurs,
-        theta=categories,
-        fill='toself',
-        fillcolor='rgba(99, 102, 241, 0.2)',
-        line=dict(color='#6366f1', width=2),
-        name='Profil employé'
-    ))
-    fig_radar.update_layout(
-        polar=dict(
-            radialaxis=dict(visible=True, range=[0, 1]),
-            bgcolor='#f5f7fa'
-        ),
-        title="Profil de risque",
-        height=320,
-        margin=dict(t=50, b=20),
-        paper_bgcolor='#f5f7fa',
-        plot_bgcolor='#f5f7fa',
-        font=dict(color='#1b3a6b')
-    )
-    st.plotly_chart(fig_radar, use_container_width=True)
-
-with col4:
-    st.markdown("#### 💡 Points d'attention")
-    st.markdown("")
-
-    alertes = []
-    points_positifs = []
-
+    alertes, positifs = [], []
     if satisfaction < 0.4:
-        alertes.append(f"😟 Satisfaction très basse ({satisfaction:.0%}) — entretien recommandé")
+        alertes.append(f"Satisfaction critique ({satisfaction:.0%})")
     elif satisfaction > 0.7:
-        points_positifs.append(f"😊 Bonne satisfaction au travail ({satisfaction:.0%})")
-
+        positifs.append(f"Bonne satisfaction ({satisfaction:.0%})")
     if heures_mois > 220:
-        alertes.append(f"⏰ Surcharge de travail ({heures_mois}h/mois vs 151h normal)")
+        alertes.append(f"Surcharge de travail ({heures_mois}h/mois)")
     elif heures_mois <= 170:
-        points_positifs.append(f"⚖️ Charge de travail équilibrée ({heures_mois}h/mois)")
-
+        positifs.append(f"Charge équilibrée ({heures_mois}h/mois)")
     if salaire == 'Faible':
-        alertes.append("💸 Salaire faible — risque d'offres concurrentes")
+        alertes.append("Rémunération sous le marché")
     elif salaire == 'Élevé':
-        points_positifs.append("💰 Rémunération élevée — facteur de rétention")
-
+        positifs.append("Rémunération attractive")
     if promotion == 'Non' and anciennete >= 4:
-        alertes.append(f"📈 Aucune promotion en {anciennete} ans — risque de frustration")
+        alertes.append(f"Aucune promotion en {anciennete} ans")
     elif promotion == 'Oui':
-        points_positifs.append("🎯 Promotion récente — signal positif")
-
+        positifs.append("Promotion récente")
     if nb_projets >= 6:
-        alertes.append(f"📁 Trop de projets simultanés ({nb_projets}) — risque de burn-out")
+        alertes.append(f"Surcharge projets ({nb_projets} simultanés)")
 
     if alertes:
-        st.markdown("**⚠️ Alertes :**")
+        st.markdown("**Alertes**")
         for a in alertes:
-            st.markdown(f"- {a}")
+            st.markdown(f'<div class="alert-item">🔴 {a}</div>', unsafe_allow_html=True)
+    if positifs:
+        st.markdown("**Points positifs**")
+        for p in positifs:
+            st.markdown(f'<div class="alert-item">🟢 {p}</div>', unsafe_allow_html=True)
+    if not alertes and not positifs:
+        st.markdown("Profil équilibré, continuer le suivi régulier.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    if points_positifs:
-        st.markdown("**✅ Points positifs :**")
-        for p in points_positifs:
-            st.markdown(f"- {p}")
 
-st.divider()
+# ── PLAN D'ACTION ────────────────────────────────────────────
+st.markdown("---")
+st.markdown("#### 🎯 Plan d'action recommandé")
 
-# ── Recommandations ───────────────────────────────────────
-st.markdown("### 🎯 Recommandations RH")
-
-col5, col6, col7 = st.columns(3)
-
-with col5:
+a1, a2, a3 = st.columns(3)
+with a1:
     st.markdown("""
-    **📋 Actions immédiates**
-    - Entretien individuel sous 2 semaines
-    - Évaluer la charge de travail réelle
-    - Identifier les sources d'insatisfaction
-    """)
-
-with col6:
+    <div class="action-card">
+      <h4>⚡ Actions immédiates</h4>
+      <ul>
+        <li>Entretien individuel sous 2 semaines</li>
+        <li>Évaluer la charge de travail réelle</li>
+        <li>Identifier les sources d'insatisfaction</li>
+      </ul>
+    </div>""", unsafe_allow_html=True)
+with a2:
     st.markdown("""
-    **📅 Actions à 3 mois**
-    - Plan de développement personnalisé
-    - Révision salariale si justifiée
-    - Réduction du nombre de projets
-    """)
-
-with col7:
+    <div class="action-card" style="border-color:#f59e0b;">
+      <h4>📅 À 3 mois</h4>
+      <ul>
+        <li>Plan de développement personnalisé</li>
+        <li>Révision salariale si justifiée</li>
+        <li>Réduction du nombre de projets</li>
+      </ul>
+    </div>""", unsafe_allow_html=True)
+with a3:
     st.markdown("""
-    **🔭 Actions à 6 mois**
-    - Bilan de satisfaction formalisé
-    - Opportunités d'évolution interne
-    - Révision du plan de carrière
-    """)
+    <div class="action-card" style="border-color:#10b981;">
+      <h4>🔭 À 6 mois</h4>
+      <ul>
+        <li>Bilan de satisfaction formalisé</li>
+        <li>Opportunités d'évolution interne</li>
+        <li>Révision du plan de carrière</li>
+      </ul>
+    </div>""", unsafe_allow_html=True)
 
-st.divider()
+st.markdown("<br>", unsafe_allow_html=True)
 
-# ── Coût estimé du remplacement ──────────────────────────
-st.markdown("### 💰 Impact financier estimé")
 
-col8, col9, col10 = st.columns(3)
+# ── IMPACT FINANCIER ────────────────────────────────────────
+st.markdown("---")
+st.markdown("#### 💶 Analyse financière")
 
-salaire_annuel_map = {'Faible': 28000, 'Moyen': 42000, 'Élevé': 65000}
-salaire_annuel = salaire_annuel_map[salaire]
-cout_remplacement = salaire_annuel * 0.5  # Convention : 50% du salaire annuel
+f1, f2, f3 = st.columns(3)
+with f1:
+    st.metric("Coût estimé du remplacement", f"{cout:,.0f} €",
+              help="Recrutement + formation + perte de productivité")
+with f2:
+    st.metric("Exposition financière", f"{cout * proba[1]:,.0f} €",
+              help="Coût pondéré par la probabilité de départ")
+with f3:
+    st.metric("Budget rétention conseillé", f"{cout * proba[1] * 0.3:,.0f} €",
+              help="30% de l'exposition — investissement recommandé")
 
-with col8:
-    st.metric(
-        label="💶 Coût estimé du remplacement",
-        value=f"{cout_remplacement:,.0f} €",
-        help="Recrutement + formation + perte de productivité"
-    )
-with col9:
-    st.metric(
-        label="📉 Risque financier pondéré",
-        value=f"{cout_remplacement * proba[1]:,.0f} €",
-        help="Coût × probabilité de départ"
-    )
-with col10:
-    st.metric(
-        label="💡 Investissement rétention conseillé",
-        value=f"{cout_remplacement * proba[1] * 0.3:,.0f} €",
-        help="Budget actions RH recommandé (30% du risque financier)"
-    )
 
-st.divider()
-
-# ── Footer ────────────────────────────────────────────────
+# ── FOOTER ──────────────────────────────────────────────────
 st.markdown("""
-<div style='text-align: center; color: #9ca3af; font-size: 0.85rem; padding: 20px'>
-    RH Predict · Outil d'aide à la décision RH · Les prédictions sont indicatives et doivent être combinées au jugement humain
+<hr>
+<div style="display:flex; justify-content:space-between; align-items:center;
+            padding: 0.5rem 0; color: #9ca3af; font-size: 0.78rem;">
+  <span>© 2026 RH Predict · Outil d'aide à la décision</span>
+  <span>Les prédictions sont indicatives et doivent être combinées au jugement humain</span>
 </div>
 """, unsafe_allow_html=True)
