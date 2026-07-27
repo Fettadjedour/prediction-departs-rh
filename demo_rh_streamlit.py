@@ -233,16 +233,37 @@ proba      = modele.predict_proba(employe)[0]
 risque_pct = proba[1] * 100
 
 if risque_pct >= 60:
-    niveau, couleur_badge, couleur_barre = "RISQUE ÉLEVÉ", "badge-high", "#dc2626"
+    niveau        = "⚠️ RISQUE ÉLEVÉ"
+    couleur_badge = "badge-high"
+    couleur_barre = "#dc2626"
+    bg_banner     = "linear-gradient(135deg, #fef2f2, #fee2e2)"
+    border_banner = "#fca5a5"
+    txt_banner    = "#7f1d1d"
+    emoji_banner  = "🔴"
+    conseil       = "Action RH immédiate recommandée"
 elif risque_pct >= 30:
-    niveau, couleur_badge, couleur_barre = "RISQUE MODÉRÉ", "badge-medium", "#d97706"
+    niveau        = "⚡ RISQUE MODÉRÉ"
+    couleur_badge = "badge-medium"
+    couleur_barre = "#f97316"
+    bg_banner     = "linear-gradient(135deg, #fff7ed, #ffedd5)"
+    border_banner = "#fdba74"
+    txt_banner    = "#7c2d12"
+    emoji_banner  = "🟠"
+    conseil       = "Surveillance et actions préventives conseillées"
 else:
-    niveau, couleur_badge, couleur_barre = "FAIBLE RISQUE", "badge-low", "#16a34a"
+    niveau        = "✅ FAIBLE RISQUE"
+    couleur_badge = "badge-low"
+    couleur_barre = "#16a34a"
+    bg_banner     = "linear-gradient(135deg, #f0fdf4, #dcfce7)"
+    border_banner = "#86efac"
+    txt_banner    = "#14532d"
+    emoji_banner  = "🟢"
+    conseil       = "Employé stable — continuer le suivi régulier"
 
 
 # ── EN-TÊTE ─────────────────────────────────────────────────
 st.markdown(f"""
-<div style="display:flex; align-items:center; gap:16px; margin-bottom:0.5rem;">
+<div style="display:flex; align-items:center; gap:16px; margin-bottom:1.2rem;">
   <div style="background:linear-gradient(135deg,#7c3aed,#a855f7); color:white; width:48px; height:48px;
               border-radius:12px; display:flex; align-items:center;
               justify-content:center; font-size:1.4rem;
@@ -253,8 +274,30 @@ st.markdown(f"""
       Plateforme d'analyse prédictive des ressources humaines
     </div>
   </div>
-  <div style="margin-left:auto;">
-    <span class="{couleur_badge}">{niveau}</span>
+</div>
+
+<!-- BANNIÈRE RISQUE CENTRALE ET IMPACTANTE -->
+<div style="
+  background: {bg_banner};
+  border: 1.5px solid {border_banner};
+  border-radius: 16px;
+  padding: 1.2rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+">
+  <div style="display:flex; align-items:center; gap:16px;">
+    <div style="font-size:2.8rem; line-height:1;">{emoji_banner}</div>
+    <div>
+      <div style="font-size:1.5rem; font-weight:900; color:{txt_banner}; letter-spacing:-0.5px;">{niveau}</div>
+      <div style="font-size:0.88rem; color:{txt_banner}; opacity:0.75; margin-top:3px;">{conseil}</div>
+    </div>
+  </div>
+  <div style="text-align:right;">
+    <div style="font-size:3rem; font-weight:900; color:{txt_banner}; line-height:1;">{risque_pct:.0f}%</div>
+    <div style="font-size:0.78rem; color:{txt_banner}; opacity:0.6; text-transform:uppercase; letter-spacing:0.05em;">de probabilité de départ</div>
   </div>
 </div>
 <hr>
