@@ -286,6 +286,7 @@ with col_gauge:
     st.markdown('<div class="result-card">', unsafe_allow_html=True)
     st.markdown("#### 📊 Score de risque de départ")
 
+
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=risque_pct,
@@ -352,6 +353,65 @@ with col_factors:
     if not alertes and not positifs:
         st.markdown("Profil équilibré, continuer le suivi régulier.")
     st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ── GRAPHIQUE RADAR ─────────────────────────────────────────
+st.markdown("---")
+st.markdown("#### 🕸️ Profil de risque détaillé")
+
+col_radar, col_info = st.columns([3, 2])
+
+with col_radar:
+    categories = ['Insatisfaction', 'Surcharge', 'Ancienneté', 'Évaluation', 'Nb Projets']
+    valeurs = [
+        1 - satisfaction,
+        (heures_mois - 96) / (310 - 96),
+        anciennete / 10,
+        evaluation,
+        (nb_projets - 2) / 5
+    ]
+    valeurs_fermees = valeurs + [valeurs[0]]
+    categories_fermees = categories + [categories[0]]
+
+    fig_radar = go.Figure(go.Scatterpolar(
+        r=valeurs_fermees,
+        theta=categories_fermees,
+        fill='toself',
+        fillcolor='rgba(124, 58, 237, 0.15)',
+        line=dict(color='#7c3aed', width=2.5),
+        name='Profil employé'
+    ))
+    fig_radar.update_layout(
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0, 1],
+                           tickfont=dict(color='#7c3aed', size=10),
+                           gridcolor='#ede9fe'),
+            angularaxis=dict(tickfont=dict(color='#2d1b69', size=11)),
+            bgcolor='#faf5ff'
+        ),
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        height=300,
+        margin=dict(t=30, b=20, l=50, r=50),
+        font=dict(family='Inter', color='#2d1b69'),
+        showlegend=False
+    )
+    st.plotly_chart(fig_radar, use_container_width=True)
+
+with col_info:
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="background:#f5f3ff; border-radius:10px; padding:1.2rem; border:1px solid #ede9fe;">
+    <p style="color:#4c1d95 !important; font-weight:700; font-size:0.85rem; margin-bottom:0.8rem;">
+    📖 Comment lire ce graphique</p>
+    <p style="color:#4b5563 !important; font-size:0.83rem; line-height:1.7;">
+    Plus la surface colorée est grande, plus le risque est élevé.<br><br>
+    <strong>Insatisfaction</strong> → Moral de l'employé<br>
+    <strong>Surcharge</strong> → Volume de travail<br>
+    <strong>Ancienneté</strong> → Années sans évolution<br>
+    <strong>Évaluation</strong> → Performance récente<br>
+    <strong>Nb Projets</strong> → Charge simultanée
+    </p></div>""", unsafe_allow_html=True)
 
 
 # ── PLAN D'ACTION ────────────────────────────────────────────
